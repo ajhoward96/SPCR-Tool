@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPCR Tool - Freedom Forever</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:Arial,sans-serif;background:#f9fafb;padding:24px}
+        .container{max-width:1200px;margin:0 auto}
+        .header{background:#2563eb;color:#fff;padding:24px;border-radius:8px 8px 0 0}
+        .header h1{font-size:26px}.header p{opacity:.85;margin-top:4px}
+        .content{background:#fff;padding:24px;border-radius:0 0 8px 8px;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+        .section{margin-bottom:32px;padding-bottom:24px;border-bottom:1px solid #e5e7eb}
+        .section:last-child{border-bottom:none}
+        .section h2{font-size:20px;margin-bottom:16px;color:#1f2937}
+        .form-group{margin-bottom:16px}
+        .form-group label{display:block;font-weight:600;margin-bottom:8px}
+        input[type="text"],input[type="number"],input[type="date"],textarea,select{width:100%;padding:8px 12px;border:1px solid #d1d5db;border-radius:4px;font-size:14px}
+        button{background:#2563eb;color:#fff;padding:10px 24px;border:none;border-radius:4px;font-weight:600;cursor:pointer;font-size:14px}
+        button:hover{background:#1d4ed8}
+        button:disabled{background:#d1d5db;cursor:not-allowed}
+        .btn-green{background:#059669}.btn-green:hover{background:#047857}
+        .btn-sm{padding:6px 14px;font-size:13px}
+        .project-info{background:#eff6ff;border:1px solid #93c5fd;padding:16px;border-radius:8px;margin-bottom:24px}
+        .project-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+        .project-grid .full-width{grid-column:span 2}
+        .radio-group{display:flex;gap:16px;flex-wrap:wrap}
+        .radio-label{display:flex;align-items:center;gap:8px;cursor:pointer}
+        input[type="radio"],input[type="checkbox"]{width:16px;height:16px}
+        .step-indicator{display:inline-block;background:#2563eb;color:#fff;width:28px;height:28px;border-radius:50%;text-align:center;line-height:28px;font-weight:700;font-size:14px;margin-right:8px}
+        .year-checkboxes{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+        .year-cb{display:flex;align-items:center;gap:4px;background:#f1f5f9;border:1px solid #cbd5e1;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:13px;font-weight:600;transition:all .15s}
+        .year-cb:hover{background:#e0e7ff;border-color:#818cf8}
+        .year-cb.selected{background:#2563eb;color:#fff;border-color:#2563eb}
+        .year-cb input{display:none}
+        .year-card{border:2px solid #e5e7eb;border-radius:8px;margin-bottom:12px;overflow:hidden}
+        .year-card.complete-met{border-color:#059669}
+        .year-card.complete-missed{border-color:#d97706}
+        .year-card.complete-covered{border-color:#2563eb}
+        .year-card-header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;cursor:pointer;user-select:none}
+        .year-card-header h3{font-size:15px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+        .year-card-badge{font-size:11px;padding:3px 10px;border-radius:12px;font-weight:600;text-transform:uppercase}
+        .badge-pending{background:#fef3c7;color:#92400e}
+        .badge-met{background:#d1fae5;color:#065f46}
+        .badge-missed{background:#fee2e2;color:#991b1b}
+        .badge-covered{background:#dbeafe;color:#1e40af}
+        .badge-excluded{background:#fce7f3;color:#9d174d}
+        .badge-panels{background:#fff7ed;color:#9a3412}
+        .year-card-body{padding:0 18px 18px;display:none}
+        .year-card.open .year-card-body{display:block}
+        .year-card-chevron{transition:transform .2s;font-size:18px}
+        .year-card.open .year-card-chevron{transform:rotate(180deg)}
+        .ysm{background:#f0f9ff;border:1px solid #0284c7;border-radius:6px;padding:12px;margin-bottom:12px}
+        .ysm-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
+        .ysm-item{text-align:center}
+        .ysm-item .lbl{font-size:11px;color:#64748b;text-transform:uppercase}
+        .ysm-item .val{font-size:16px;font-weight:700;color:#0f172a}
+        .ysm-item .val.green{color:#059669}
+        .ysm-item .val.amber{color:#d97706}
+        .ysm-item .val.blue{color:#2563eb}
+        .surplus-banner{background:#ede9fe;border:1px solid #c4b5fd;border-radius:6px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+        .surplus-banner .text{font-size:13px;color:#4c1d95}
+        .surplus-banner .text strong{font-size:15px}
+        .surplus-applied{background:#dbeafe;border:1px solid #93c5fd;border-radius:6px;padding:10px 14px;margin-top:10px;font-size:13px;color:#1e3a5f}
+        .calc-result{background:#fff;border:1px solid #d1d5db;padding:12px;border-radius:4px;margin-top:12px;font-size:14px}
+        .adjusted-note{background:#fef3c7;border:1px solid #fcd34d;border-radius:6px;padding:10px 14px;margin-bottom:12px;font-size:13px;color:#92400e}
+        .drop-zone{border:2px dashed #d1d5db;border-radius:8px;padding:24px;text-align:center;background:#f9fafb;cursor:pointer}
+        .drop-zone:hover{border-color:#2563eb;background:#eff6ff}
+        .file-item{background:#f3f4f6;border:1px solid #e5e7eb;padding:10px 12px;margin-bottom:6px;border-radius:4px;display:flex;justify-content:space-between;align-items:center;font-size:13px}
+        .file-remove{background:#dc2626;color:#fff;padding:3px 10px;border:none;border-radius:4px;cursor:pointer;font-size:11px}
+        .prior-year-prompt{background:#fff7ed;border:2px solid #f97316;border-radius:8px;padding:16px;margin-bottom:16px}
+        .prior-year-prompt h4{color:#9a3412;font-size:14px;font-weight:700;margin-bottom:10px}
+        .prior-year-prompt p{font-size:13px;color:#7c2d12;margin-bottom:12px}
+        .prior-year-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+        .surplus-bank-box{background:#f5f3ff;border:2px solid #8b5cf6;border-radius:8px;padding:18px;margin-bottom:20px}
+        .surplus-bank-box h3{color:#5b21b6;font-size:16px;margin-bottom:12px}
+        .surplus-bank-total{background:#ede9fe;border-radius:6px;padding:12px;text-align:center;margin-top:8px}
+        .surplus-bank-total .big{font-size:24px;font-weight:800;color:#5b21b6}
+        .surplus-alloc-section{margin-top:12px;padding-top:12px;border-top:1px solid #c4b5fd}
+        .surplus-alloc-mode{display:flex;gap:12px;margin-bottom:12px}
+        .surplus-alloc-row{display:flex;align-items:center;gap:10px;padding:8px 12px;background:#fff;border:1px solid #e5e7eb;border-radius:6px;margin-bottom:6px}
+        .surplus-alloc-row .yr-label{font-weight:700;min-width:40px}
+        .surplus-alloc-row input[type="number"]{width:120px}
+        .surplus-remaining{font-size:13px;color:#5b21b6;font-weight:600;margin-top:8px}
+        .upload-split{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+        .upload-box{border:1px solid #e5e7eb;border-radius:8px;padding:16px}
+        .upload-box h4{font-size:14px;margin-bottom:4px}
+        .upload-box p{font-size:12px;color:#64748b;margin-bottom:12px}
+        .upload-box.customer{border-color:#059669;background:#f0fdf4}
+        .upload-box.customer h4{color:#059669}
+        .upload-box.office{border-color:#2563eb;background:#eff6ff}
+        .upload-box.office h4{color:#2563eb}
+        .gen-buttons{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+        .gen-card{border:2px solid #e5e7eb;border-radius:8px;padding:20px;text-align:center}
+        .gen-card h4{font-size:16px;margin-bottom:6px}
+        .gen-card p{font-size:12px;color:#64748b;margin-bottom:12px}
+        .gen-card ul{text-align:left;font-size:12px;color:#374151;list-style:none;padding:0}
+        .gen-card ul li{padding:3px 0}
+        .gen-card ul li::before{content:'✓ ';color:#059669;font-weight:700}
+        .resolution-box{background:#fff7ed;border:2px solid #f97316;border-radius:8px;padding:14px;margin-bottom:12px}
+        .resolution-box h4{color:#9a3412;font-size:14px;margin-bottom:10px}
+        #outputSection{display:none;margin-top:32px}
+        #pdfOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+        #pdfOverlay.active{display:flex}
+        #pdfOverlay .msg{color:#fff;font-size:18px;font-weight:600}
+        #pdfOverlay .sub{color:#cbd5e1;font-size:13px}
+        .spinner{width:48px;height:48px;border:5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        #renderArea{position:fixed;left:-9999px;top:0;width:816px;background:#fff;font-family:Arial,sans-serif}
+        .prf-page{padding:32px 40px;background:#fff}
+        .prf-logo{text-align:center;margin-bottom:10px}
+        .prf-logo span{font-size:32px;font-weight:bold;color:#059669;border:3px solid #059669;border-radius:8px;padding:5px 18px;display:inline-block;line-height:1.1}
+        .prf-logo span small{display:block;color:#059669;font-size:12px;letter-spacing:4px;font-weight:600;text-transform:uppercase}
+        .prf-title{text-align:center;font-weight:bold;font-size:20px;margin-bottom:20px}
+        .prf-fieldset{border:1px solid #999;padding:14px 20px;border-radius:4px;margin-bottom:16px}
+        .prf-fieldset legend{font-weight:700;padding:0 8px;font-size:14px}
+        .prf-row{display:flex;gap:14px;margin-bottom:10px;align-items:baseline;flex-wrap:wrap}
+        .prf-row label{font-weight:bold;font-size:13px;white-space:nowrap}
+        .prf-row .prf-val{border-bottom:1px solid #999;padding:2px 6px;font-size:13px;flex:1;min-width:80px;min-height:18px}
+        .prf-row-full{margin-bottom:10px}
+        .prf-row-full label{font-weight:bold;font-size:13px;display:block;margin-bottom:3px}
+        .prf-row-full .prf-val{border-bottom:1px solid #999;padding:2px 6px;font-size:13px;display:block;min-height:18px}
+        .sched-page{padding:32px 40px;background:#fff}
+        .sched-page h2{font-size:20px;margin-bottom:16px;font-weight:700}
+        .sched-note{background:#fef3c7;border:1px solid #fcd34d;border-radius:6px;padding:10px 14px;margin-bottom:14px;font-size:13px;color:#92400e}
+        .sched-table{width:100%;border-collapse:collapse}
+        .sched-table th{text-align:left;padding:8px 14px;border-bottom:3px solid #333;font-size:13px;font-weight:700}
+        .sched-table td{padding:5px 14px;border-bottom:1px solid #e5e7eb;font-size:13px}
+        .sched-table tr.highlight{background:#dbeafe;font-weight:700}
+        .letter-pg{background:#fff;display:flex;flex-direction:column;min-height:900px}
+        .letter-hdr{display:flex;justify-content:flex-end;padding:14px 48px 8px;flex-shrink:0}
+        .letter-ftr{background:#1a5c34;color:#fff;display:flex;justify-content:center;align-items:center;gap:40px;padding:16px 40px;flex-shrink:0}
+        .letter-body{padding:20px 48px 24px;font-family:'Times New Roman',Times,serif;font-size:13px;line-height:1.4;flex:1}
+        .letter-body p{margin-bottom:10px}
+    </style>
+</head>
+<body>
+<div id="pdfOverlay">
+    <div class="spinner"></div>
+    <div class="msg" id="pdfMsg">Generating PDF...</div>
+    <div class="sub" id="pdfSub">This may take a few seconds</div>
+</div>
+<div id="renderArea"></div>
+<div class="container">
+    <div class="header">
+        <h1>System Performance Claim Request (SPCR) Tool</h1>
+        <p>Multi-year processing with threshold-based Year 1 &amp; degradation from actual production</p>
+    </div>
+    <div class="content">
+        <div class="section">
+            <h2><span class="step-indicator">1</span>Enter Project Information</h2>
+            <div class="project-info"><div class="project-grid">
+                <div><strong>Customer Name: <span style="color:#dc2626">*</span></strong><input type="text" id="customerName"></div>
+                <div><strong>Project ID: <span style="color:#dc2626">*</span></strong><input type="text" id="projectId"></div>
+                <div><strong>Branch: <span style="color:#dc2626">*</span></strong><input type="text" id="branch"></div>
+                <div><strong>Phone Number:</strong><input type="text" id="phoneNumber" placeholder="(xxx) xxx-xxxx"></div>
+                <div class="full-width"><strong>Address: <span style="color:#dc2626">*</span></strong><input type="text" id="address"></div>
+                <div><strong>System Size: <span style="color:#dc2626">*</span></strong><input type="text" id="systemSize" placeholder="e.g., 7.35 kW"></div>
+                <div><strong>PV Watts/Aurora (kWh):</strong><input type="text" id="pvWatts" placeholder="e.g., 12500"></div>
+                <div><strong>PTO Date: <span style="color:#dc2626">*</span></strong><input type="date" id="ptoDate"></div>
+                <div><strong>Commencement Date: <span style="color:#dc2626">*</span></strong><input type="date" id="commencementDate"></div>
+                <div><strong>Claim Submitted:</strong><input type="date" id="submittedDate"></div>
+            </div></div>
+        </div>
+
+        <div class="section">
+            <h2><span class="step-indicator">2</span>Production Guarantee &amp; Year Selection</h2>
+            <div class="form-group" id="pgField">
+                <label>Original Contract Production Guarantee (kWh/year) <span style="color:#dc2626">*</span></label>
+                <input type="number" id="contractPG" placeholder="Enter original PG from contract">
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+                <div class="form-group"><label>Agent Name <span style="color:#dc2626">*</span></label><input type="text" id="agentName"></div>
+                <div class="form-group"><label>Agent Title</label><input type="text" id="agentTitle" value="Asset Control Supervisor"></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+                <div class="form-group">
+                    <label>Payout Rate ($/kWh)</label>
+                    <input type="number" id="globalRate" step="0.01" min="0" value="0.12">
+                    <p style="font-size:12px;color:#64748b;margin-top:4px">Applies to all years.</p>
+                </div>
+                <div class="form-group">
+                    <label>Contract Agreement Type</label>
+                    <div class="radio-group" style="margin-top:4px">
+                        <label class="radio-label"><input type="radio" name="threshold" value="0.85" checked><span>85%</span></label>
+                        <label class="radio-label"><input type="radio" name="threshold" value="0.90"><span>90%</span></label>
+                        <label class="radio-label"><input type="radio" name="threshold" value="0.70"><span>70%</span></label>
+                        <label class="radio-label"><input type="radio" name="threshold" value="actual"><span>Actual Annual</span></label>
+                    </div>
+                    <p id="actualAnnualNote" style="display:none;font-size:13px;color:#2563eb;margin-top:6px;font-weight:600">Info: Actual Annual: No contract PG needed.</p>
+                    <div style="margin-top:8px">
+                        <label class="radio-label" style="gap:10px;cursor:pointer">
+                            <input type="checkbox" id="lockPGBase" style="width:16px;height:16px">
+                            <span style="font-weight:600;font-size:13px">Lock degradation base to original PG</span>
+                        </label>
+                        <p id="lockPGBaseNote" style="display:none;font-size:12px;color:#2563eb;margin-top:4px;margin-left:26px">Base will always use the original contract PG regardless of Y1 actual production.</p>
+                    </div>
+                </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+                <div class="form-group">
+                    <label>Degradation Formula</label>
+                    <div class="radio-group">
+                        <label class="radio-label"><input type="radio" name="degradation" value="old" checked><span>Old (5% Y2, then -0.5%/yr)</span></label>
+                        <label class="radio-label"><input type="radio" name="degradation" value="new"><span>New (5% Y2, then x0.995/yr)</span></label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Letter Contract Clause Language</label>
+                    <div class="radio-group">
+                        <label class="radio-label"><input type="radio" name="clauseLang" value="en" checked><span>English</span></label>
+                        <label class="radio-label"><input type="radio" name="clauseLang" value="es"><span>Spanish</span></label>
+                    </div>
+                    <p style="font-size:12px;color:#64748b;margin-top:4px">Controls the entire letter language.</p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Select Performance Year(s) to Process <span style="color:#dc2626">*</span></label>
+                <p style="font-size:13px;color:#64748b;margin-bottom:8px">Click each year. Surplus rolls forward.</p>
+                <div class="year-checkboxes" id="yearCheckboxes"></div>
+            </div>
+            <div class="surplus-bank-box">
+                <h3>Surplus Bank</h3>
+                <input type="hidden" id="manualSurplus" value="0">
+                <div class="form-group" style="margin-bottom:0">
+                    <label style="font-size:13px">Session-Generated Surplus</label>
+                    <input type="number" id="sessionSurplus" value="0" disabled style="background:#e5e7eb">
+                </div>
+                <div class="surplus-bank-total">
+                    <div style="font-size:12px;color:#5b21b6;text-transform:uppercase;font-weight:600">Total Available Surplus</div>
+                    <div class="big" id="totalSurplusDisplay">0.00 kWh</div>
+                </div>
+                <div class="surplus-alloc-section" id="surplusAllocSection" style="display:none">
+                    <label style="font-weight:700;font-size:14px;margin-bottom:8px;display:block">Surplus Allocation Mode</label>
+                    <div class="surplus-alloc-mode">
+                        <label class="radio-label"><input type="radio" name="allocMode" value="auto" checked><span style="font-size:13px">Auto-apply in order</span></label>
+                        <label class="radio-label"><input type="radio" name="allocMode" value="manual"><span style="font-size:13px">Manual - assign kWh per year</span></label>
+                    </div>
+                    <div id="surplusAllocRows"></div>
+                    <div class="surplus-remaining" id="surplusRemainingDisplay"></div>
+                </div>
+            </div>
+            <div id="yearCardsContainer"></div>
+            <div style="margin-top:16px;text-align:center">
+                <button class="btn-green" id="generateAllBtn" style="padding:14px 40px;font-size:16px" disabled>Calculate</button>
+            </div>
+        </div>
+
+        <div id="outputSection"></div>
+
+        <div class="section">
+            <h2><span class="step-indicator">3</span>Upload Additional Documents</h2>
+            <div class="upload-split">
+                <div class="upload-box customer">
+                    <h4>Customer Packet Documents</h4>
+                    <p>Included in Customer PDF only</p>
+                    <div class="drop-zone" id="dropZoneCust">
+                        <input type="file" id="fileInputCust" accept=".pdf,image/*" multiple style="display:none">
+                        <p style="font-weight:600;font-size:13px">Click or drag &amp; drop</p>
+                        <p style="color:#6b7280;font-size:12px">PDF and images</p>
+                    </div>
+                    <div id="fileListCust"></div>
+                </div>
+                <div class="upload-box office">
+                    <h4>Office Packet Documents</h4>
+                    <p>Included in Office PDF only</p>
+                    <div class="drop-zone" id="dropZoneOff">
+                        <input type="file" id="fileInputOff" accept=".pdf,image/*" multiple style="display:none">
+                        <p style="font-weight:600;font-size:13px">Click or drag &amp; drop</p>
+                        <p style="color:#6b7280;font-size:12px">PDF and images</p>
+                    </div>
+                    <div id="fileListOff"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2><span class="step-indicator">4</span>Generate PDF Packet</h2>
+            <div class="gen-buttons">
+                <div class="gen-card">
+                    <h4>Customer Packet</h4><p>For the customer</p>
+                    <ul><li>Formal Letter(s)</li><li>Degradation Schedule</li><li>Customer Attached Docs</li></ul>
+                    <button class="btn-green" style="margin-top:12px;width:100%" id="genCustBtn" disabled>Generate Customer PDF</button>
+                </div>
+                <div class="gen-card">
+                    <h4>Office Packet</h4><p>Freedom Forever internal</p>
+                    <ul><li>Performance Review Form(s)</li><li>Formal Letter(s)</li><li>Degradation Schedule</li><li>All Attached Docs</li></ul>
+                    <button class="btn-green" style="margin-top:12px;width:100%" id="genOffBtn" disabled>Generate Office PDF</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+var pdfjsLib = window['pdfjs-dist/build/pdf'];
+if (pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+var custFiles = [], custFileData = [], offFiles = [], offFileData = [];
+var yearData = {}, selectedYears = [], surplusAllocations = {};
+
+function getTodayMDY() {
+    var d = new Date();
+    return p2(d.getMonth()+1)+'/'+p2(d.getDate())+'/'+d.getFullYear();
+}
+function p2(n) { return ('0'+n).slice(-2); }
+
+function fmtDateLetter(ds) {
+    if (!ds) return '';
+    var d = new Date(ds+'T00:00:00');
+    var m = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    return m[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();
+}
+function fmtDateLetterES(ds) {
+    if (!ds) return '';
+    var d = new Date(ds+'T00:00:00');
+    var m = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+    return d.getDate()+' de '+m[d.getMonth()]+' de '+d.getFullYear();
+}
+function tWord(p) { return {'85':'eighty-five','90':'ninety','70':'seventy'}[p] || p; }
+function tWordES(p) { return {'85':'ochenta y cinco','90':'noventa','70':'setenta'}[p] || p; }
+function cm(n) { return n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+function esc(v) { return String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function gv(id) { return document.getElementById(id).value; }
+function getThresholdVal() { return document.querySelector('input[name="threshold"]:checked').value; }
+function isAA() { return getThresholdVal() === 'actual'; }
+function isFixedBase() { return document.getElementById('lockPGBase').checked || getThresholdVal() === '0.90'; }
+function getTp() { var v = getThresholdVal(); if (v === 'actual') return 1; return parseFloat(v); }
+function getTd() { return isAA() ? 'Actual' : (getTp()*100).toFixed(0); }
+function getAllocMode() { return document.querySelector('input[name="allocMode"]:checked').value; }
+function getClauseLang() { return document.querySelector('input[name="clauseLang"]:checked').value; }
+function getGlobalRate() { return parseFloat(document.getElementById('globalRate').value) || 0.12; }
+function getGepDisplay() { return '$'+getGlobalRate().toFixed(2)+'/kWh'; }
+
+function calcDeg(base, y, f) {
+    if (y === 1) return base;
+    if (f === 'old') {
+        if (y === 2) return base * 0.95;
+        return base * ((95 - (y-2) * 0.5) / 100);
+    }
+    var v = base * 0.95;
+    for (var i = 3; i <= y; i++) v *= 0.995;
+    return v;
+}
+
+function getManualSurplus() { return parseFloat(document.getElementById('manualSurplus').value) || 0; }
+function getPriorY1Actual() { var el = document.getElementById('priorY1Actual'); return el ? parseFloat(el.value)||0 : 0; }
+function getPriorSurplus() { var el = document.getElementById('priorSurplus'); return el ? parseFloat(el.value)||0 : 0; }
+
+function getPriorEffectiveBase(pg, tp, aa, priorActual) {
+    if (!priorActual) return 0;
+    if (aa) return priorActual;
+    if (pg && priorActual >= pg) return pg;
+    if (pg && priorActual >= pg * tp) return priorActual;
+    return priorActual;
+}
+
+function getEffectiveBase() {
+    var pg = parseFloat(gv('contractPG'))||0;
+    var y1 = yearData[1];
+    if (!y1 || !y1.finalStatus) return pg;
+    if (isAA()) return y1.actual;
+    if (isFixedBase()) return pg;
+    var tp = getTp();
+    if (y1.actual >= pg) return pg;
+    if (y1.actual >= pg * tp) return y1.actual;
+    return pg * tp;
+}
+
+function getSurplusForYear(y, avail) {
+    if (getAllocMode() === 'manual') return Math.min(surplusAllocations[y]||0, avail);
+    if (surplusAllocations[y] === 'skip') return 0;
+    return avail;
+}
+
+function getExclusionLabel(exc, reason) {
+    if (exc === 'outside_window') return 'Outside of 60 day request window';
+    if (exc === 'force_majeure') return 'Force majeure';
+    if (exc === 'customer_off') return 'Customer turned off system';
+    if (exc === 'other') return reason || 'Other';
+    return '';
+}
+function getExclusionLabelES(exc, reason) {
+    if (exc === 'outside_window') return 'Fuera del plazo de solicitud de 60 dias';
+    if (exc === 'force_majeure') return 'Fuerza mayor';
+    if (exc === 'customer_off') return 'El cliente apago el sistema';
+    if (exc === 'other') return reason || 'Otro';
+    return '';
+}
+
+function recalcSurplus() {
+    var pg = parseFloat(gv('contractPG'))||0;
+    var f = document.querySelector('input[name="degradation"]:checked').value;
+    var tp = getTp(), aa = isAA(), rate = getGlobalRate();
+    var sorted = selectedYears.slice().sort(function(a,b){ return a-b; });
+    var minYear = sorted.length ? sorted[0] : 1;
+    var skippingY1 = (minYear > 1);
+    var basePG, surplus, sessionGen = 0;
+
+    if (skippingY1) {
+        var priorActual = getPriorY1Actual();
+        surplus = getPriorSurplus();
+        if (!priorActual) { basePG = 0; }
+        else if (aa) { basePG = priorActual; }
+        else if (pg && priorActual >= pg) { basePG = pg; }
+        else if (pg && priorActual >= pg*tp) { basePG = priorActual; }
+        else { basePG = priorActual; }
+    } else {
+        surplus = getManualSurplus();
+        basePG = pg;
+    }
+
+    sorted.forEach(function(y) {
+        var d = yearData[y];
+        if (!d) return;
+        d.isYear1 = (y===1); d.isAA = aa; d.rate = rate;
+
+        if (y === 1) {
+            if (aa) {
+                d.activePG = d.actual; d.threshold = null; d.surplusIn = surplus;
+                d.shortfall = 0; d.surplusUsed = 0; d.comp = 0; d.overageFromPG = 0;
+                d.finalStatus = 'met'; basePG = d.actual;
+            } else {
+                d.activePG = pg; d.threshold = pg*tp; d.surplusIn = surplus;
+                if (d.actual >= pg) {
+                    d.shortfall=0; d.surplusUsed=0; d.comp=0; d.finalStatus='met';
+                    d.overageFromPG = d.actual-pg; sessionGen += d.overageFromPG; surplus += d.overageFromPG; basePG = pg;
+                } else if (d.actual >= pg*tp) {
+                    d.shortfall=0; d.surplusUsed=0; d.comp=0; d.finalStatus='met'; d.overageFromPG=0;
+                    basePG = isFixedBase() ? pg : d.actual;
+                } else {
+                    var raw = pg*tp - d.actual; d.overageFromPG = 0;
+                    var usable = getSurplusForYear(y, surplus);
+                    if (usable >= raw) {
+                        d.surplusUsed=raw; d.shortfall=0; d.comp=0; d.finalStatus='covered'; surplus-=raw; basePG=pg*tp;
+                    } else if (usable > 0) {
+                        d.surplusUsed=usable; d.shortfall=raw-usable; surplus-=usable; basePG=pg*tp;
+                        if (d.resolution==='panels') { d.comp=0; d.finalStatus='panels'; } else { d.comp=d.shortfall*rate; d.finalStatus='partial'; }
+                    } else {
+                        d.surplusUsed=0; d.shortfall=raw; basePG=pg*tp;
+                        if (d.resolution==='panels') { d.comp=0; d.finalStatus='panels'; } else { d.comp=d.shortfall*rate; d.finalStatus='missed'; }
+                    }
+                }
+            }
+        } else {
+            var activePG = calcDeg(basePG, y, f);
+            d.activePG = activePG; d.threshold = null; d.surplusIn = surplus;
+            if (d.actual >= activePG) {
+                d.shortfall=0; d.surplusUsed=0; d.comp=0; d.finalStatus='met';
+                d.overageFromPG = d.actual-activePG; sessionGen += d.overageFromPG; surplus += d.overageFromPG;
+            } else {
+                var raw2 = activePG - d.actual; d.overageFromPG = 0;
+                var usable2 = getSurplusForYear(y, surplus);
+                if (usable2 >= raw2) {
+                    d.surplusUsed=raw2; d.shortfall=0; d.comp=0; d.finalStatus='covered'; surplus-=raw2;
+                } else if (usable2 > 0) {
+                    d.surplusUsed=usable2; d.shortfall=raw2-usable2; d.comp=d.shortfall*rate; d.finalStatus='partial'; surplus-=usable2;
+                } else {
+                    d.surplusUsed=0; d.shortfall=raw2; d.comp=d.shortfall*rate; d.finalStatus='missed';
+                }
+            }
+        }
+
+        d.surplusOut = surplus;
+        if (isFixedBase()) { basePG = pg; d.basePG = pg; } else { d.basePG = basePG; }
+
+        if (d.exclusion && d.exclusion !== 'none' && (d.finalStatus==='missed'||d.finalStatus==='partial')) {
+            d.originalComp = d.comp; d.comp = 0; d.finalStatus = 'excluded';
+        }
+    });
+
+    document.getElementById('sessionSurplus').value = sessionGen.toFixed(2);
+    var totalSurp = skippingY1 ? getPriorSurplus()+sessionGen : getManualSurplus()+sessionGen;
+    document.getElementById('totalSurplusDisplay').textContent = cm(totalSurp)+' kWh';
+    var el = document.getElementById('surplusRemainingDisplay');
+    if (el) el.textContent = surplus > 0 ? 'Remaining surplus: '+cm(surplus)+' kWh' : '';
+}
+
+function buildSurplusAllocRows() {
+    var container = document.getElementById('surplusAllocRows');
+    var section = document.getElementById('surplusAllocSection');
+    var totalSurplus = getManualSurplus() + (parseFloat(document.getElementById('sessionSurplus').value)||0);
+    if (!selectedYears.length || totalSurplus <= 0) { section.style.display='none'; return; }
+    section.style.display = 'block';
+    var mode = getAllocMode();
+    container.innerHTML = '';
+    var eligibleYears = selectedYears.filter(function(y) {
+        if (y===1) return false;
+        var d = yearData[y];
+        if (d && d.finalStatus==='met') return false;
+        return true;
+    });
+    if (!eligibleYears.length) {
+        container.innerHTML = '<p style="font-size:13px;color:#64748b">No years eligible for surplus.</p>';
+        return;
+    }
+    eligibleYears.forEach(function(y) {
+        var row = document.createElement('div');
+        row.className = 'surplus-alloc-row';
+        if (mode === 'manual') {
+            var cv = typeof surplusAllocations[y]==='number' ? surplusAllocations[y] : 0;
+            row.innerHTML = '<span class="yr-label">Y'+y+'</span><input type="number" value="'+cv+'" min="0" style="flex:1"><span style="font-size:12px;color:#64748b">kWh</span>';
+            row.querySelector('input').addEventListener('change', function() {
+                surplusAllocations[y] = parseFloat(this.value)||0;
+                recalcSurplus(); rebuildCards();
+            });
+        } else {
+            var isSkip = surplusAllocations[y]==='skip';
+            row.innerHTML = '<span class="yr-label">Y'+y+'</span><label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox"'+(isSkip?' checked':'')+'><span style="font-size:12px;color:#64748b">Skip surplus for this year</span></label>';
+            row.querySelector('input').addEventListener('change', function() {
+                surplusAllocations[y] = this.checked ? 'skip' : null;
+                recalcSurplus(); rebuildCards();
+            });
+        }
+        container.appendChild(row);
+    });
+}
+
+function buildYearCheckboxes() {
+    var c = document.getElementById('yearCheckboxes');
+    c.innerHTML = '';
+    for (var y = 1; y <= 25; y++) {
+        var l = document.createElement('label');
+        l.className = 'year-cb';
+        l.setAttribute('data-year', y);
+        l.innerHTML = '<input type="checkbox" value="'+y+'"> Y'+y;
+        l.querySelector('input').addEventListener('change', (function(yy, ll) {
+            return function(e) {
+                if (e.target.checked) {
+                    ll.classList.add('selected');
+                    if (selectedYears.indexOf(yy) === -1) selectedYears.push(yy);
+                } else {
+                    ll.classList.remove('selected');
+                    selectedYears = selectedYears.filter(function(v){ return v !== yy; });
+                    delete yearData[yy];
+                    delete surplusAllocations[yy];
+                }
+                selectedYears.sort(function(a,b){ return a-b; });
+                recalcSurplus(); rebuildCards(); buildSurplusAllocRows(); updatePGFieldVisibility();
+            };
+        })(y, l));
+        c.appendChild(l);
+    }
+}
+
+function rebuildCards() {
+    var openCards = selectedYears.filter(function(y) {
+        var c = document.getElementById('card-'+y);
+        return c && c.classList.contains('open');
+    });
+    buildYearCards();
+    openCards.forEach(function(y) {
+        var c = document.getElementById('card-'+y);
+        if (c) c.classList.add('open');
+    });
+}
+
+function buildPriorYearPrompt() {
+    var c = document.getElementById('yearCardsContainer');
+    var minYear = selectedYears.length ? Math.min.apply(null, selectedYears) : 1;
+    var existing = document.getElementById('priorYearPrompt');
+    if (minYear === 1 || !selectedYears.length) { if (existing) existing.remove(); return; }
+    if (!existing) {
+        var div = document.createElement('div');
+        div.id = 'priorYearPrompt'; div.className = 'prior-year-prompt';
+        div.innerHTML = '<h4>Prior Year Data Required</h4>'
+            +'<p>You are starting at Year '+minYear+'. Please enter Year 1 actual production and any existing surplus below.</p>'
+            +'<div class="prior-year-grid">'
+            +'<div class="form-group" style="margin-bottom:0"><label style="font-size:13px;font-weight:600">Year 1 Actual Production (kWh) <span style="color:#dc2626">*</span></label><input type="number" id="priorY1Actual" placeholder="e.g. 11800" style="margin-top:4px"></div>'
+            +'<div class="form-group" style="margin-bottom:0"><label style="font-size:13px;font-weight:600">Carried-Forward Surplus (kWh)</label><input type="number" id="priorSurplus" placeholder="0" style="margin-top:4px" value="0"></div>'
+            +'</div>';
+        c.parentNode.insertBefore(div, c);
+        document.getElementById('priorY1Actual').addEventListener('input', function() { recalcSurplus(); rebuildCards(); buildSurplusAllocRows(); });
+        document.getElementById('priorSurplus').addEventListener('input', function() { recalcSurplus(); rebuildCards(); buildSurplusAllocRows(); });
+    } else {
+        existing.querySelector('p').textContent = 'You are starting at Year '+minYear+'. Please enter Year 1 actual production and any existing surplus below.';
+    }
+}
+
+function buildCondHTML(y, d, isY1, rate) {
+    if (d.finalStatus === 'covered') {
+        return '<div class="form-group"><label>Reason for production loss</label>'
+            +'<textarea id="reason_'+y+'" rows="2" placeholder="Enter reason for production loss">'+esc(d.reason||'')+'</textarea></div>';
+    }
+    var html = '<div class="form-group"><label>Reason for production loss</label>'
+        +'<textarea id="reason_'+y+'" rows="2" placeholder="Required for shortfall">'+esc(d.reason||'')+'</textarea></div>';
+    if (isY1 && (d.finalStatus==='missed'||d.finalStatus==='partial'||d.finalStatus==='panels')) {
+        var resPayout = (!d.resolution || d.resolution==='payout');
+        html += '<div class="resolution-box"><h4>Year 1 Resolution</h4><div class="radio-group">'
+            +'<label class="radio-label"><input type="radio" name="resolution_1" value="payout"'+(resPayout?' checked':'')+'><span>Payout ($'+((d.shortfall||0)*rate).toFixed(2)+')</span></label>'
+            +'<label class="radio-label"><input type="radio" name="resolution_1" value="panels"'+(!resPayout?' checked':'')+'><span>Add Panels ('+cm(d.shortfall||0)+' kWh)</span></label>'
+            +'</div></div>';
+    }
+    var excVal = d.exclusion||'none';
+    var excReason = d.exclusionReason||'';
+    html += '<div class="form-group"><label>Exclusionary Event</label>'
+        +'<div class="radio-group" style="margin-bottom:8px">'
+        +'<label class="radio-label"><input type="radio" name="exclusion_'+y+'" value="none"'+(excVal==='none'?' checked':'')+'><span>None</span></label>'
+        +'<label class="radio-label"><input type="radio" name="exclusion_'+y+'" value="outside_window"'+(excVal==='outside_window'?' checked':'')+'><span>Outside 60 day window</span></label>'
+        +'<label class="radio-label"><input type="radio" name="exclusion_'+y+'" value="force_majeure"'+(excVal==='force_majeure'?' checked':'')+'><span>Force majeure</span></label>'
+        +'<label class="radio-label"><input type="radio" name="exclusion_'+y+'" value="customer_off"'+(excVal==='customer_off'?' checked':'')+'><span>Customer turned off</span></label>'
+        +'<label class="radio-label"><input type="radio" name="exclusion_'+y+'" value="other"'+(excVal==='other'?' checked':'')+'><span>Other</span></label>'
+        +'</div>'
+        +'<div id="exclusion_other_'+y+'" style="display:'+(excVal==='other'?'block':'none')+'">'
+        +'<input type="text" id="exclusion_reason_'+y+'" value="'+esc(excReason)+'" placeholder="Reason"></div></div>';
+    return html;
+}
+
+function buildYearCards() {
+    var c = document.getElementById('yearCardsContainer');
+    c.innerHTML = '';
+    buildPriorYearPrompt();
+    if (!selectedYears.length) { disableGenButtons(); return; }
+    var pg = parseFloat(gv('contractPG'))||0;
+    var f = document.querySelector('input[name="degradation"]:checked').value;
+    var aa = isAA(), td = getTd();
+    var minYear = Math.min.apply(null, selectedYears), skippingY1 = (minYear > 1);
+    var effBase, previewSurplus;
+    if (skippingY1) {
+        var pA = getPriorY1Actual();
+        previewSurplus = getPriorSurplus();
+        effBase = getPriorEffectiveBase(pg, getTp(), aa, pA);
+        if (!effBase) effBase = 0;
+    } else {
+        effBase = getEffectiveBase();
+        previewSurplus = getManualSurplus();
+    }
+    var y1d = yearData[1];
+    var baseAdj = skippingY1 || (y1d && y1d.finalStatus && (aa || (y1d.actual < pg)));
+    var rate = getGlobalRate();
+
+    selectedYears.forEach(function(y) {
+        var d = yearData[y]||{}, isY1=(y===1), activePG;
+        if (d.activePG) { activePG = d.activePG; }
+        else if (isY1) { activePG = aa ? 0 : pg; }
+        else { activePG = calcDeg(effBase, y, f); }
+        var surplusDisplay = d.surplusIn !== undefined ? d.surplusIn : previewSurplus;
+        var threshold = (isY1 && !aa) ? (pg * getTp()) : null;
+
+        var statusClass = '', badge = '<span class="year-card-badge badge-pending">Pending</span>';
+        if (d.finalStatus==='met') { statusClass='complete-met'; badge='<span class="year-card-badge badge-met">Denied - Meets Guarantee</span>'; }
+        else if (d.finalStatus==='covered') { statusClass='complete-covered'; badge='<span class="year-card-badge badge-covered">Covered by Surplus</span>'; }
+        else if (d.finalStatus==='partial'||d.finalStatus==='missed') { statusClass='complete-missed'; badge='<span class="year-card-badge badge-missed">Approved - $'+d.comp.toFixed(2)+'</span>'; }
+        else if (d.finalStatus==='excluded') { statusClass='complete-missed'; badge='<span class="year-card-badge badge-excluded">Denied - Exclusion</span>'; }
+        else if (d.finalStatus==='panels') { statusClass='complete-missed'; badge='<span class="year-card-badge badge-panels">Add Panels - '+cm(d.shortfall)+' kWh</span>'; }
+
+        var extras = '';
+        if (d.surplusIn > 0) extras += '<div class="surplus-banner"><div style="font-size:22px">&#x1F3E6;</div><div class="text">Surplus entering Y'+y+': <strong>'+cm(d.surplusIn)+' kWh</strong></div></div>';
+        if (!isY1 && baseAdj) extras += '<div class="adjusted-note">Degradation base: '+cm(effBase)+' kWh (from Y1)</div>';
+
+        var metrics = '<div class="ysm"><div class="ysm-grid">';
+        if (isY1 && aa) { metrics += '<div class="ysm-item"><div class="lbl">Contract Type</div><div class="val green">Actual Annual</div></div>'; }
+        else { metrics += '<div class="ysm-item"><div class="lbl">Active PG (Y'+y+')</div><div class="val green">'+cm(activePG)+' kWh</div></div>'; }
+        if (isY1 && !aa && threshold !== null) metrics += '<div class="ysm-item"><div class="lbl">Threshold ('+td+'%)</div><div class="val amber">'+cm(threshold)+' kWh</div></div>';
+        metrics += '<div class="ysm-item"><div class="lbl">Surplus Available</div><div class="val blue">'+(surplusDisplay>0?cm(surplusDisplay)+' kWh':'0.00 kWh')+'</div></div>';
+        metrics += '<div class="ysm-item"><div class="lbl">Rate</div><div class="val">$'+rate.toFixed(2)+'/kWh</div></div></div></div>';
+
+        var results = '';
+        if (d.finalStatus==='covered') results += '<div class="surplus-applied">Covered by surplus. '+cm(d.surplusUsed)+' kWh applied. Remaining: '+cm(d.surplusOut)+' kWh.</div>';
+        else if (d.finalStatus==='partial') results += '<div class="surplus-applied">Partial surplus applied. Net shortfall: '+cm(d.shortfall)+' kWh - $'+d.comp.toFixed(2)+'</div>';
+        else if (d.finalStatus==='panels') results += '<div class="calc-result" style="border-color:#f97316;background:#fff7ed"><strong>Add Panels:</strong> Shortfall '+cm(d.shortfall)+' kWh.</div>';
+        else if (d.finalStatus==='met' && d.overageFromPG>0) results += '<div class="surplus-applied">+'+cm(d.overageFromPG)+' kWh to surplus. Bank: '+cm(d.surplusOut)+' kWh</div>';
+        else if (d.finalStatus==='met' && isY1 && aa) results += '<div class="adjusted-note">Actual Annual: '+cm(d.actual)+' kWh set as base.</div>';
+        else if (d.finalStatus==='met' && isY1 && !aa && d.actual < pg) results += '<div class="adjusted-note">Met '+td+'% threshold. Base set to '+cm(d.actual)+' kWh.</div>';
+        if (d.finalStatus==='missed') {
+            var tgt = isY1 ? threshold : d.activePG;
+            results += '<div class="calc-result"><strong>'+(isY1?'Threshold':'Active PG')+':</strong> '+cm(tgt)+' | <strong>Actual:</strong> '+cm(d.actual)+' | <strong>Shortfall:</strong> '+cm(d.shortfall)+' | <strong>Comp:</strong> $'+d.comp.toFixed(2)+'</div>';
+        }
+        if (d.finalStatus==='excluded') results += '<div class="calc-result" style="border-color:#9d174d;background:#fce7f3"><strong>Denied</strong> - '+getExclusionLabel(d.exclusion,d.exclusionReason)+'</div>';
+
+        var needsDetails = d.finalStatus && d.finalStatus !== 'met';
+        var condHTML = needsDetails ? buildCondHTML(y, d, isY1, rate) : '';
+        var saveVisible = needsDetails ? 'inline-block' : 'none';
+
+        c.insertAdjacentHTML('beforeend',
+            '<div class="year-card '+statusClass+'" id="card-'+y+'">'
+            +'<div class="year-card-header" onclick="toggleCard('+y+')"><h3>Year '+y+' '+badge+'</h3><span class="year-card-chevron">&#9660;</span></div>'
+            +'<div class="year-card-body">'+extras+metrics
+            +'<div class="form-group"><label>Actual Production for Year '+y+' (kWh) *</label>'
+            +'<input type="number" id="actual_'+y+'" value="'+(d.actual||'')+'" placeholder="Enter actual kWh" oninput="debounceEval('+y+')">'
+            +'</div>'
+            +'<div id="conditional_'+y+'">'+condHTML+'</div>'
+            +'<button class="btn-green btn-sm" id="save_'+y+'" onclick="saveYear('+y+')" style="display:'+saveVisible+'">Save Year '+y+'</button>'
+            +results
+            +'</div></div>'
+        );
+        if (needsDetails && d.finalStatus !== 'covered') wireExclusion(y);
+    });
+    checkAllComplete();
+}
+
+var evalTimers = {};
+function debounceEval(y) {
+    clearTimeout(evalTimers[y]);
+    evalTimers[y] = setTimeout(function() { autoEvalYear(y); }, 600);
+}
+
+function autoEvalYear(y) {
+    var actual = parseFloat(document.getElementById('actual_'+y).value);
+    if (isNaN(actual) || actual < 0) {
+        document.getElementById('conditional_'+y).innerHTML = '';
+        document.getElementById('save_'+y).style.display = 'none';
+        return;
+    }
+    var pg = parseFloat(gv('contractPG'))||0;
+    var f = document.querySelector('input[name="degradation"]:checked').value;
+    var tp = getTp(), aa = isAA(), rate = getGlobalRate(), isY1 = (y===1);
+    var minYear = selectedYears.length ? Math.min.apply(null, selectedYears) : 1;
+    var skippingY1 = (minYear > 1);
+    var baseForCalc = skippingY1 ? getPriorEffectiveBase(pg, tp, aa, getPriorY1Actual()) : getEffectiveBase();
+    var activePG, threshold = null;
+    if (isY1) { activePG = aa ? actual : pg; threshold = aa ? null : pg*tp; }
+    else { activePG = calcDeg(baseForCalc, y, f); }
+    var meets = isY1 && !aa ? (actual >= pg*tp) : (actual >= activePG);
+    var cDiv = document.getElementById('conditional_'+y);
+    var saveBtn = document.getElementById('save_'+y);
+
+    if (meets) {
+        var prevReason = yearData[y] ? (yearData[y].reason || '') : '';
+        yearData[y] = { actual:actual, rate:rate, reason:prevReason, exclusion:'none', exclusionReason:'', resolution:'payout' };
+        recalcSurplus();
+        var isCovered = yearData[y] && yearData[y].finalStatus === 'covered';
+        if (isCovered) {
+            cDiv.innerHTML = '<div class="surplus-applied" style="margin-bottom:10px">Covered by surplus.</div>'
+                +'<div class="form-group"><label>Reason for production loss</label>'
+                +'<textarea id="reason_'+y+'" rows="2" placeholder="Enter reason for production loss">'+esc(prevReason)+'</textarea></div>';
+            saveBtn.style.display = 'inline-block';
+        } else {
+            saveBtn.style.display = 'none';
+            cDiv.innerHTML = '<div class="surplus-applied" style="margin-bottom:10px">Meets guarantee - will be automatically denied.</div>';
+        }
+        var openBefore = selectedYears.filter(function(yy) { var cc=document.getElementById('card-'+yy); return cc&&cc.classList.contains('open'); });
+        buildYearCards();
+        openBefore.forEach(function(yy) { var cc=document.getElementById('card-'+yy); if(cc) cc.classList.add('open'); });
+        checkAllComplete();
+    } else {
+        var shortfallPreview = Math.max(0, (isY1&&!aa ? pg*tp : activePG) - actual);
+        var prevReason = yearData[y] ? (yearData[y].reason||'') : '';
+        var condHTML = '<div class="form-group"><label>Reason for production loss</label>'
+            +'<textarea id="reason_'+y+'" rows="2" placeholder="Required for shortfall">'+esc(prevReason)+'</textarea></div>';
+        if (isY1) {
+            condHTML += '<div class="resolution-box"><h4>Year 1 Resolution</h4><div class="radio-group">'
+                +'<label class="radio-label"><input type="radio" name="resolution_1" value="payout" checked><span>Payout ($'+(shortfallPreview*rate).toFixed(2)+')</span></label>'
+                +'<label class="radio-label"><input type="radio" name="resolution_1" value="panels"><span>Add Panels</span></label>'
+                +'</div></div>';
+        }
+        condHTML += '<div class="form-group"><label>Exclusionary Event</label>'
+            +'<div class="radio-group" style="margin-bottom:8px">'
+            +'<label class="radio-label"><input type="radio" name="exclusion_'+y+'" value="none" checked><span>None</span></label>'
+            +'<label class="radio-label"><input type="radio" name="exclusion_'+y+'" value="outside_window"><span>Outside 60 day window</span></label>'
+            +'<label class="radio-label"><input type="radio" name="exclusion_'+y+'" value="force_majeure"><span>Force majeure</span></label>'
+            +'<label class="radio-label"><input type="radio" name="exclusion_'+y+'" value="customer_off"><span>Customer turned off</span></label>'
+            +'<label class="radio-label"><input type="radio" name="exclusion_'+y+'" value="other"><span>Other</span></label>'
+            +'</div><div id="exclusion_other_'+y+'" style="display:none">'
+            +'<input type="text" id="exclusion_reason_'+y+'" placeholder="Reason"></div></div>';
+        cDiv.innerHTML = condHTML;
+        wireExclusion(y);
+        saveBtn.style.display = 'inline-block';
+    }
+}
+
+function saveYear(y) {
+    var actual = parseFloat(document.getElementById('actual_'+y).value)||0;
+    var prevData = yearData[y] || {};
+    var reasonEl = document.getElementById('reason_'+y);
+    var reason = reasonEl ? reasonEl.value : (prevData.reason || '');
+    var excEl = document.querySelector('input[name="exclusion_'+y+'"]:checked');
+    var exc = excEl ? excEl.value : (prevData.exclusion || 'none');
+    var excReason = '';
+    if (exc === 'other') { var rEl = document.getElementById('exclusion_reason_'+y); excReason = rEl ? rEl.value : (prevData.exclusionReason || ''); }
+    var resEl = document.querySelector('input[name="resolution_'+y+'"]:checked');
+    var resolution = resEl ? resEl.value : 'payout';
+    yearData[y] = {
+        actual: actual,
+        rate: getGlobalRate(),
+        reason: reason,
+        exclusion: exc,
+        exclusionReason: excReason,
+        resolution: (y===1 ? resolution : 'payout')
+    };
+    recalcSurplus();
+    var openBefore = selectedYears.filter(function(yy) { var cc=document.getElementById('card-'+yy); return cc&&cc.classList.contains('open'); });
+    buildYearCards();
+    openBefore.forEach(function(yy) { var cc=document.getElementById('card-'+yy); if(cc) cc.classList.add('open'); });
+    buildSurplusAllocRows();
+    var next = selectedYears.find(function(yr) { return yr > y && (!yearData[yr]||!yearData[yr].finalStatus); });
+    if (next) setTimeout(function() { var card=document.getElementById('card-'+next); if(card&&!card.classList.contains('open')) card.classList.add('open'); }, 100);
+}
+
+function wireExclusion(y) {
+    document.querySelectorAll('input[name="exclusion_'+y+'"]').forEach(function(r) {
+        r.addEventListener('change', function() {
+            var o = document.getElementById('exclusion_other_'+y);
+            if (o) o.style.display = (r.value==='other') ? 'block' : 'none';
+        });
+    });
+}
+
+function toggleCard(y) { document.getElementById('card-'+y).classList.toggle('open'); }
+
+function disableGenButtons() {
+    document.getElementById('generateAllBtn').disabled = true;
+    document.getElementById('genCustBtn').disabled = true;
+    document.getElementById('genOffBtn').disabled = true;
+}
+
+function checkAllComplete() {
+    var ok = selectedYears.length > 0 && selectedYears.every(function(y) { return yearData[y] && yearData[y].finalStatus; });
+    document.getElementById('generateAllBtn').disabled = !ok;
+    document.getElementById('genCustBtn').disabled = !ok;
+    document.getElementById('genOffBtn').disabled = !ok;
+}
+
+function updatePGFieldVisibility() {
+    var minYear = selectedYears.length ? Math.min.apply(null, selectedYears) : 1;
+    document.getElementById('pgField').style.display = (minYear > 1 || isAA()) ? 'none' : 'block';
+}
+
+document.getElementById('contractPG').addEventListener('input', function() { recalcSurplus(); rebuildCards(); buildSurplusAllocRows(); });
+document.getElementById('globalRate').addEventListener('input', function() { recalcSurplus(); rebuildCards(); });
+
+document.querySelectorAll('input[name="threshold"],input[name="degradation"]').forEach(function(el) {
+    el.addEventListener('change', function() {
+        var aa = isAA();
+        document.getElementById('actualAnnualNote').style.display = aa ? 'block' : 'none';
+        if (el.name === 'threshold') {
+            var lockCb = document.getElementById('lockPGBase');
+            var is90 = getThresholdVal() === '0.90';
+            if (is90) { lockCb.checked = true; lockCb.disabled = true; }
+            else if (aa) { lockCb.checked = false; lockCb.disabled = true; }
+            else { lockCb.disabled = false; }
+            document.getElementById('lockPGBaseNote').style.display = lockCb.checked ? 'block' : 'none';
+        }
+        updatePGFieldVisibility();
+        recalcSurplus(); rebuildCards(); buildSurplusAllocRows();
+    });
+});
+
+document.querySelectorAll('input[name="allocMode"]').forEach(function(el) {
+    el.addEventListener('change', function() { surplusAllocations = {}; recalcSurplus(); rebuildCards(); buildSurplusAllocRows(); });
+});
+
+document.getElementById('lockPGBase').addEventListener('change', function() {
+    document.getElementById('lockPGBaseNote').style.display = this.checked ? 'block' : 'none';
+    recalcSurplus(); rebuildCards(); buildSurplusAllocRows();
+});
+
+function setupDZ(dzId, fiId, target) {
+    var dz = document.getElementById(dzId), fi = document.getElementById(fiId);
+    dz.addEventListener('click', function() { fi.click(); });
+    dz.addEventListener('dragover', function(e) { e.preventDefault(); });
+    dz.addEventListener('drop', function(e) { e.preventDefault(); handleFileUpload(e.dataTransfer.files, target); });
+    fi.addEventListener('change', function(e) { handleFileUpload(e.target.files, target); fi.value = ''; });
+}
+setupDZ('dropZoneCust','fileInputCust','cust');
+setupDZ('dropZoneOff','fileInputOff','off');
+
+function handleFileUpload(fl, target) {
+    var arr = target==='cust' ? custFiles : offFiles;
+    var da = target==='cust' ? custFileData : offFileData;
+    var lid = target==='cust' ? 'fileListCust' : 'fileListOff';
+    for (var i = 0; i < fl.length; i++) {
+        var f = fl[i];
+        if (f.type==='application/pdf' || f.type.startsWith('image/')) {
+            arr.push(f);
+            (function(file, dataArr) {
+                var r = new FileReader();
+                if (file.type.startsWith('image/')) {
+                    r.onload = function(e){ dataArr.push({type:'image',name:file.name,data:e.target.result}); };
+                    r.readAsDataURL(file);
+                } else {
+                    r.onload = function(e){ dataArr.push({type:'pdf',name:file.name,data:new Uint8Array(e.target.result)}); };
+                    r.readAsArrayBuffer(file);
+                }
+            })(f, da);
+            addFI(f, arr, da, lid);
+        }
+    }
+}
+
+function addFI(f, arr, da, lid) {
+    var l = document.getElementById(lid), d = document.createElement('div');
+    d.className = 'file-item';
+    d.innerHTML = '<div><strong>'+f.name+'</strong></div>';
+    var b = document.createElement('button'); b.className = 'file-remove'; b.textContent = 'X';
+    var ref = f;
+    b.onclick = function() { var idx=arr.indexOf(ref); if(idx>-1){arr.splice(idx,1);da.splice(idx,1);} d.remove(); };
+    d.appendChild(b); l.appendChild(d);
+}
+
+/* ── HTML Builders ── */
+function letterHdrHTML() {
+    return '<div class="letter-hdr"><div style="display:flex;align-items:center;gap:6px;color:#1a6b3a;font-family:Arial,sans-serif;font-size:16px;font-weight:700;">Freedom Forever</div></div>';
+}
+function letterFtrHTML() {
+    return '<div class="letter-ftr"><div style="font-size:12px;">1.888.557.6431</div><div style="font-size:12px;">customersupport@freedomforever.com</div><div style="font-size:12px;">www.freedomforever.com</div></div>';
+}
+function getClauseEN(y,tw,td) {
+    return '"xxx.Customer agrees to allow Freedom Forever to replace or install additional panels so that the Annual kWh for Production Year '+y+' meets at least '+tw+' percent ('+td+'%) of the Guaranteed Annual kWh for Production Year '+y+', the new Guaranteed Annual kWh for Production Year '+y+' will be the original Guaranteed Annual kWh multiplied by '+tw+' percent ('+td+'%) and the Guaranteed Annual kWh for future Production years will be adjusted to reflect the change and Customer shall still be entitled to submit a Performance Claim for the Production Deficit between the new Guaranteed Annual kWh and the Actual Annual kWh for Production Year '+y+'. Freedom Forever will provide no notice of Production Year '+y+' Guaranteed Annual kWh adjustments made. In the event that the Actual Annual kWh for Production Year '+y+' is greater than '+tw+' percent ('+td+'%) but less than one hundred percent (100%) of the Guaranteed Annual kWh described in Exhibit A. Article 2.1., the new Guaranteed Annual kWh for Production Year '+y+' will be adjusted to the Actual Annual kWh produced in Production Year '+y+'. Any adjustment of the Guaranteed Annual kWh is subject to the degradation schedule set forth in Exhibit A. Article 2.2."';
+}
+function getClauseES(y,tw,td) {
+    return '"xxx.El Cliente acepta permitir que Freedom Forever reemplace o instale paneles adicionales para que los kWh Anuales del Ano de Produccion '+y+' alcancen al menos el '+tw+' por ciento ('+td+'%) de los kWh Anuales Garantizados para el Ano de Produccion '+y+'."';
+}
+function articleSurplus() {
+    return '2.3 "Production Year Surplus. If at the end of a Production Year, the Actual Annual kWh for such Production Year is greater than the Guaranteed Annual kWh for that Production Year, there will be no additional cost to the Customer for this surplus energy. However, this surplus will be carried over and used by Freedom Forever to offset any future Production Year Deficits."';
+}
+function articleSurplusES() {
+    return '2.3 "Excedente del Ano de Produccion. Si al final de un Ano de Produccion, los kWh Anuales Reales son mayores que los kWh Anuales Garantizados, no habra ningun costo adicional para el Cliente. Sin embargo, este excedente se trasladara y sera utilizado por Freedom Forever para compensar cualquier Deficit futuro."';
+}
+
+function buildPRFHTML(y, d, td, aa) {
+    var isY1 = (y===1), an = gv('agentName');
+    var target = isY1&&aa ? d.actual : isY1 ? d.threshold : d.activePG;
+    var diff = Math.max(target - d.actual, 0);
+    var defPct = target > 0 ? (diff / target * 100) : 0;
+    var compAmt = (d.finalStatus==='missed'||d.finalStatus==='partial') ? d.comp : 0;
+    var isExcluded = d.finalStatus==='excluded', isPanels = d.finalStatus==='panels';
+    var resolution = isExcluded ? 'Denied. Exclusionary event: '+getExclusionLabel(d.exclusion,d.exclusionReason)+'.'
+        : isPanels ? 'Add panels. Shortfall: '+cm(d.shortfall)+' kWh.'
+        : compAmt>0 ? 'Approved for compensation.'
+        : d.finalStatus==='covered' ? 'Denied. Covered by surplus.'
+        : 'Denied. System meets production guarantee.';
+    var pgLabel = isY1&&aa ? 'A) Y1 Actual Production:' : isY1 ? 'A) Production guarantee ('+td+'%):' : 'A) Production guarantee:';
+    var pgVal = isY1&&aa ? cm(d.actual)+' kWh' : isY1 ? cm(d.threshold)+' kWh' : cm(d.activePG)+' kWh';
+    var ctLabel = isY1&&aa ? 'Actual Annual Contract' : isY1 ? 'Contract 5: '+td+'% of PG in Y1' : 'Degraded PG for Y'+y;
+    var diffLabel = isY1 ? 'E) Diff (Threshold-D):' : 'E) Diff (PG-D):';
+    var showReason = compAmt>0 || isPanels || d.finalStatus==='covered';
+    var h = '<div class="prf-page"><div class="prf-logo"><span>Freedom<small>Forever</small></span></div><div class="prf-title">Performance Review Request Form</div>';
+    h += '<fieldset class="prf-fieldset"><legend>For Customer Use Only</legend>';
+    h += prfR('Customer Name:',gv('customerName'),'Date:',getTodayMDY());
+    h += prfF('Customer Address:',gv('address'));
+    h += prfF('Phone Number:',gv('phoneNumber'));
+    h += prfF('Reason for claim:','Production concerns');
+    h += '</fieldset><fieldset class="prf-fieldset"><legend>For Office Use Only</legend>';
+    h += prfR('Job #:',gv('projectId'),'Region:',gv('branch'));
+    h += prfR('Production Year:',y,'GEP:',getGepDisplay());
+    h += prfR(pgLabel,pgVal,'Contract Type:',ctLabel);
+    h += prfR('B) PV Watts/Aurora:',(gv('pvWatts')||'')+' kWh','C) % Deficit:',(defPct>0?defPct.toFixed(2):'0')+'%');
+    h += prfR('D) Actual Annual:',d.actual.toFixed(2)+' kWh',diffLabel,diff.toFixed(2)+' kWh');
+    h += prfF('Reason for Production loss:', showReason ? d.reason : '');
+    h += prfF('Resolution:',resolution);
+    h += prfF('Articles:','Article 7; Exhibit A Articles 1 and 2');
+    h += prfR('Compensation:',compAmt>0?'$'+compAmt.toFixed(2):(isPanels?'N/A - Panels':'$0'),'Reviewed by:',an);
+    h += prfR('Date:',getTodayMDY(),'Approved by:',an);
+    h += prfF('Date:',getTodayMDY());
+    h += '</fieldset></div>';
+    return h;
+}
+
+function prfR(a,b,c,d) {
+    return '<div class="prf-row"><label>'+a+'</label><div class="prf-val">'+esc(String(b))+'</div><label>'+c+'</label><div class="prf-val">'+esc(String(d))+'</div></div>';
+}
+function prfF(a,b) {
+    return '<div class="prf-row-full"><label>'+a+'</label><div class="prf-val">'+esc(String(b))+'</div></div>';
+}
+
+function buildScheduleHTML(origPG, base, f, td, adj, aa) {
+    var sched = [];
+    if (f === 'old') {
+        sched.push({y:1,p:100,v:base}); sched.push({y:2,p:95,v:base*0.95});
+        var pc = 95;
+        for (var i = 3; i <= 25; i++) { pc -= 0.5; sched.push({y:i,p:pc,v:base*(pc/100)}); }
+    } else {
+        sched.push({y:1,p:100,v:base});
+        var vl = base*0.95; sched.push({y:2,p:95,v:vl});
+        for (var i = 3; i <= 25; i++) { vl *= 0.995; sched.push({y:i,p:(vl/base*100),v:vl}); }
+    }
+    var h = '<div class="sched-page"><h2>25-Year Degradation Schedule</h2>';
+    if (adj) h += '<div class="sched-note">'+(aa?'Actual Annual: Base = Y1 production of '+cm(base)+' kWh.':'Base adjusted from '+cm(origPG)+' to '+cm(base)+' kWh per Y1 performance.')+'</div>';
+    h += '<table class="sched-table"><thead><tr><th>Year</th><th>%</th><th>Production (kWh)</th></tr></thead><tbody>';
+    sched.forEach(function(s) {
+        var hl = selectedYears.indexOf(s.y) !== -1 ? ' class="highlight"' : '';
+        h += '<tr'+hl+'><td>Year '+s.y+'</td><td>'+s.p.toFixed(1)+'%</td><td>'+cm(s.v)+'</td></tr>';
+    });
+    h += '</tbody></table></div>';
+    return h;
+}
+
+function buildLetterHTML(y, d, td, aa) {
+    var isEs = (getClauseLang() === 'es');
+    var name = gv('customerName'), addr = gv('address'), an = gv('agentName'), at = gv('agentTitle');
+    var cd = isEs ? fmtDateLetterES(gv('commencementDate')) : fmtDateLetter(gv('commencementDate'));
+    var ds = isEs ? fmtDateLetterES(gv('submittedDate')) : fmtDateLetter(gv('submittedDate'));
+    var tw = isEs ? tWordES(td) : tWord(td);
+    var compAmt = (d.finalStatus==='missed'||d.finalStatus==='partial') ? d.comp : 0;
+    var isExcluded = d.finalStatus==='excluded', isPanels = d.finalStatus==='panels';
+    var shortfall = (compAmt>0||isPanels) ? d.shortfall : 0;
+    var rate = d.rate||0, isY1 = (y===1);
+    var surplus = d.surplusUsed||0, surplusIn = d.surplusIn||0;
+    var exclLabel = isEs ? getExclusionLabelES(d.exclusion,d.exclusionReason) : getExclusionLabel(d.exclusion,d.exclusionReason);
+    var P = [];
+    P.push('<p>'+esc(ds)+'</p><p>'+esc(name)+'</p><p style="margin-bottom:14px">'+esc(addr)+'</p>');
+    P.push('<p style="margin-bottom:14px"><strong>'+(isEs?'Asunto:':'Re:')+'</strong> '+(isEs?'Solicitud de Revision del Rendimiento del Sistema':'System Performance Claim Request')+'</p>');
+    P.push('<p>'+(isEs?'Estimado/a ':'Dear ')+esc(name)+',</p>');
+    P.push('<p>'+(isEs?'Freedom Forever ha recibido la Solicitud de Revision del Rendimiento del Sistema que usted nos presento. Por favor, lea a continuacion los detalles de la revision de su sistema.':'Freedom Forever received the System Performance Claim Request that you submitted to us. Please read further for the details of your system review.')+'</p>');
+    if (surplusIn > 0) {
+        if (isEs) {
+            var stEs = 'Banco de Excedentes: A partir del Ano de Produccion '+y+', su cuenta tenia un excedente de '+cm(surplusIn)+' kWh';
+            stEs += surplus>0 ? ', del cual '+cm(surplus)+' kWh fue aplicado a su deficit.' : '. No se aplico excedente este ano.';
+            P.push('<p>'+stEs+'</p>');
+        } else {
+            var st = 'Surplus Bank: As of Production Year '+y+', your account carried a surplus of '+cm(surplusIn)+' kWh from prior production year(s)';
+            st += surplus>0 ? ' of which '+cm(surplus)+' kWh was applied toward your Production Year '+y+' deficit.' : '. No surplus was applied this year.';
+            P.push('<p>'+st+'</p>');
+        }
+    }
+    if (isY1 && aa) {
+        if (isEs) { P.push('<p>Con base en su contrato de Produccion Anual Real, la Produccion Anual Garantizada para futuros Anos de Produccion se basara en la produccion real de su sistema en el Ano de Produccion 1. Su sistema comenzo a producir el '+cd+'. Su sistema produjo '+cm(d.actual)+' kWh en el Ano de Produccion 1.</p>'); }
+        else { P.push('<p>Based on your Actual Annual contract, the Guaranteed Annual Production for future Production Years will be based on the actual production of your system in Production Year 1. Your system commenced production on '+cd+'. Your system produced '+cm(d.actual)+' kWh in Production Year 1, which will serve as the base for the degradation schedule going forward.</p>'); }
+    } else if (isY1) {
+        if (isEs) {
+            P.push('<p>Con base en el Articulo 2.4 del Anexo "A" de su Contrato, Freedom Forever garantiza que el sistema producira '+tw+' por ciento ('+td+'%) de los kWh Anuales Garantizados del Ano de Produccion '+y+'. La Produccion Anual Garantizada de su Sistema para el Ano de Produccion '+y+' es de '+cm(d.activePG)+' kWh.</p>');
+            P.push('<p style="padding:0 16px;font-style:italic">'+getClauseES(y,tw,td)+'</p>');
+        } else {
+            P.push('<p>Based on Article 2.4 of Exhibit "A" of your Supply and Installation Agreement, Freedom Forever guarantees the solar energy system to produce '+tw+' percent ('+td+'%) of the Production Year '+y+' Guaranteed Annual kWh. In your case, the Guaranteed Annual Production of your System for Production Year '+y+' is '+cm(d.activePG)+' kWh. The said provision of the Agreement can be read as follows:</p>');
+            P.push('<p style="padding:0 16px;font-style:italic">'+getClauseEN(y,tw,td)+'</p>');
+        }
+        var outcome = '';
+        if (isExcluded) outcome = isEs ? 'por debajo del umbral. Sin embargo, su reclamacion ha sido denegada debido a un evento de exclusion: '+exclLabel+'.' : 'below '+tw+' percent ('+td+'%) of the Guaranteed Annual Production. However, after review, your claim has been denied for compensation due to an exclusionary event: '+exclLabel+'.';
+        else if (isPanels) outcome = isEs ? 'por debajo del umbral. Freedom Forever instalara paneles adicionales. Deficit: '+cm(shortfall)+' kWh.' : 'below '+tw+' percent ('+td+'%) of the Guaranteed Annual Production. Therefore, Freedom Forever will install additional panels. Shortfall: '+cm(shortfall)+' kWh.';
+        else if (compAmt>0) outcome = isEs ? 'por debajo del umbral. Compensacion aprobada: $'+compAmt.toFixed(2)+'. ( '+cm(d.threshold)+' - '+cm(d.actual)+' = '+cm(shortfall)+' x $'+rate.toFixed(2)+' )' : 'below '+tw+' percent ('+td+'%) of the Guaranteed Annual Production. After review, your claim has been approved for compensation in the amount of $'+compAmt.toFixed(2)+'. ( '+cm(d.threshold)+' kWh - '+cm(d.actual)+' kWh = '+cm(shortfall)+' x $'+rate.toFixed(2)+' )';
+        else if (d.finalStatus==='covered') outcome = isEs ? 'por debajo del umbral. Se aplico excedente de '+cm(surplus)+' kWh para cubrir el deficit. No se adeuda compensacion.' : 'below '+tw+' percent ('+td+'%) of the Guaranteed Annual Production. Surplus energy of '+cm(surplus)+' kWh was applied to fully offset this deficit. No compensation is due.';
+        else outcome = isEs ? 'por encima del '+tw+' por ciento de la Produccion Anual Garantizada. Su reclamacion ha sido denegada.' : 'above '+tw+' percent ('+td+'%) of the Guaranteed Annual Production. After review, your claim has been denied for compensation.'+(d.overageFromPG>0?' There is a surplus of '+cm(d.overageFromPG)+' kWh.':'');
+        P.push('<p>'+(isEs?'Segun el registro de monitoreo, su sistema ha producido '+cm(d.actual)+' kWh en el Ano de Produccion '+y+', lo cual esta ':'Per your system\'s monitoring record, your system has produced '+cm(d.actual)+' kWh for Production Year '+y+' which is ')+outcome+'</p>');
+        if ((compAmt>0&&surplus>0)||d.finalStatus==='covered') P.push('<p>'+(isEs?articleSurplusES():articleSurplus())+'</p>');
+        if (compAmt>0) P.push('<p>'+(isEs?'Por lo tanto, le enviamos la cantidad de $'+compAmt.toFixed(2)+' como compensacion. Esta compensacion se emitira en forma de cheque.':'Therefore, we are sending you the amount of $'+compAmt.toFixed(2)+' as compensation for the deficit in the production of your system. This compensation will be issued as a check and there is no action needed on your part to receive it.')+'</p>');
+    } else {
+        var outcome2 = '';
+        if (isExcluded) outcome2 = isEs ? 'por debajo de su produccion anual garantizada. Reclamacion denegada - evento de exclusion: '+exclLabel+'.' : 'below your guaranteed annual production. However, after review, your claim has been denied for compensation due to an exclusionary event: '+exclLabel+'.';
+        else if (isPanels) outcome2 = isEs ? 'por debajo de su produccion anual garantizada. Freedom Forever instalara paneles adicionales. Deficit: '+cm(shortfall)+' kWh.' : 'below your guaranteed annual production. Therefore, Freedom Forever will install additional panels. Shortfall: '+cm(shortfall)+' kWh.';
+        else if (compAmt>0) outcome2 = isEs ? 'por debajo de su produccion anual garantizada. Compensacion aprobada: $'+compAmt.toFixed(2)+'. ( '+cm(d.activePG)+' - '+cm(d.actual)+' = '+cm(shortfall)+' x $'+rate.toFixed(2)+' )' : 'below your guaranteed annual production. After review, your claim has been approved for compensation in the amount of $'+compAmt.toFixed(2)+'. ( '+cm(d.activePG)+' kWh - '+cm(d.actual)+' kWh = '+cm(shortfall)+' x $'+rate.toFixed(2)+' )';
+        else if (d.finalStatus==='covered') outcome2 = isEs ? 'por debajo de su produccion anual garantizada. Se aplico excedente de '+cm(surplus)+' kWh. No se adeuda compensacion.' : 'below your guaranteed annual production. Surplus energy of '+cm(surplus)+' kWh was applied to fully offset this deficit. No compensation is due.';
+        else outcome2 = isEs ? 'por encima de su produccion anual garantizada.' : 'above your guaranteed annual production.'+(d.overageFromPG>0?' There is a surplus for production year '+y+' in the amount of '+cm(d.overageFromPG)+' kWh.':'');
+        P.push('<p>'+(isEs?'La produccion anual garantizada para el Ano de Produccion '+y+' es de '+cm(d.activePG)+' kWh. Su sistema produjo '+cm(d.actual)+' kWh durante el Ano de Produccion '+y+', lo cual esta ':'The guaranteed annual production for Production Year '+y+' is '+cm(d.activePG)+' kWh. Based on your system\'s monitoring record, your system produced '+cm(d.actual)+' kWh for Production Year '+y+', which is ')+outcome2+'</p>');
+        if ((compAmt>0&&surplus>0)||d.finalStatus==='covered') P.push('<p>'+(isEs?articleSurplusES():articleSurplus())+'</p>');
+        if (compAmt>0) P.push('<p>'+(isEs?'Por lo tanto, le enviamos la cantidad de $'+compAmt.toFixed(2)+' como compensacion. Esta compensacion se emitira en forma de cheque.':'Therefore, we are sending you the amount of $'+compAmt.toFixed(2)+' as compensation for the deficit in the production of your system. This compensation will be issued as a check and there is no action needed on your part to receive it.')+'</p>');
+    }
+    if (isEs) {
+        P.push('<p>Tenga en cuenta que el Contrato de Suministro e Instalacion no garantiza ningun ahorro en dolares, solo garantiza la produccion del sistema que se mide en kWh.</p>');
+        P.push('<p>Tambien adjunto a esta carta se encuentra una copia del calendario de degradacion. La produccion de su sistema se degrada un 5% en el primer ano y un 0.5% en los anos siguientes hasta el ano 25.</p>');
+        P.push('<p>Para obtener la maxima produccion, por favor lave sus paneles dos veces al ano, pode toda la vegetacion que pueda causar sombra e informe inmediatamente cualquier codigo de falla del sistema.</p>');
+        P.push('<p>Gracias por elegir Freedom Forever como su empresa solar. Si tiene alguna pregunta adicional, no dude en enviarnos un correo electronico.</p>');
+        P.push('<p style="margin-top:24px">Atentamente,<br><br>'+esc(an)+'<br>'+esc(at)+'</p>');
+    } else {
+        P.push('<p>Please note that the Supply and Installation Agreement does not guarantee any dollar savings, it only guarantees the production of the system which is measured by kWh. Nevertheless, in the event that your system fails to meet the production guarantee defined by Exhibit "A" of your Agreement, please feel free to submit a claim at the end of a production year.</p>');
+        P.push('<p>Also, enclosed with this letter is a copy of the degradation schedule for the Guaranteed Annual Production of your Agreement reflecting the correct Guaranteed Annual kWh in accordance with the industry standard that solar energy system production degrades. Your system\'s production degrades by 5% in the first year and .5% on the succeeding years through and up to year 25.</p>');
+        P.push('<p>For maximum production, please wash your panels twice a year, trim all foliage that may cause shade and report immediately any system fault codes or system outages.</p>');
+        P.push('<p>Thank you for choosing Freedom Forever as your solar company. If you have any further questions, please feel free to email us at the email address listed above.</p>');
+        P.push('<p style="margin-top:24px">Sincerely,<br><br>'+esc(an)+'<br>'+esc(at)+'</p>');
+    }
+    return '<div class="letter-pg">'+letterHdrHTML()+'<div class="letter-body">'+P.join('')+'</div>'+letterFtrHTML()+'</div>';
+}
+
+function buildPreview() {
+    var pg = parseFloat(gv('contractPG'))||0;
+    var f = document.querySelector('input[name="degradation"]:checked').value;
+    var aa = isAA(), td = getTd(), effBase = getEffectiveBase();
+    var schedAdj = (yearData[1]&&yearData[1].finalStatus) && (aa||(yearData[1].actual<pg));
+    var out = document.getElementById('outputSection');
+    out.innerHTML = ''; out.style.display = 'block';
+    selectedYears.forEach(function(y){ out.innerHTML += buildPRFHTML(y,yearData[y],td,aa); });
+    selectedYears.forEach(function(y){ out.innerHTML += buildLetterHTML(y,yearData[y],td,aa); });
+    out.innerHTML += buildScheduleHTML(pg,effBase,f,td,schedAdj,aa);
+    out.scrollIntoView({behavior:'smooth'});
+}
+
+document.getElementById('generateAllBtn').addEventListener('click', function(){ buildPreview(); });
+
+async function generatePacket(type) {
+    var overlay = document.getElementById('pdfOverlay');
+    overlay.classList.add('active');
+    document.getElementById('pdfMsg').textContent = 'Building document...';
+    document.getElementById('pdfSub').textContent = 'Please wait';
+    await new Promise(function(r){ setTimeout(r,50); });
+    var pg = parseFloat(gv('contractPG'))||0;
+    var f = document.querySelector('input[name="degradation"]:checked').value;
+    var aa = isAA(), td = getTd(), effBase = getEffectiveBase();
+    var schedAdj = (yearData[1]&&yearData[1].finalStatus) && (aa||(yearData[1].actual<pg));
+    var attachData = type==='office' ? custFileData.concat(offFileData) : custFileData;
+    var custName = (gv('customerName')||'SPCR').replace(/[^a-z0-9_\-]/gi,'_');
+    var fileName = custName+'_'+(type==='office'?'Office':'Customer')+'_Packet.pdf';
+    var sections = [];
+    if (type==='office') { selectedYears.forEach(function(y){ sections.push({html:buildPRFHTML(y,yearData[y],td,aa),label:'PRF Y'+y}); }); }
+    selectedYears.forEach(function(y){ sections.push({html:buildLetterHTML(y,yearData[y],td,aa),label:'Letter Y'+y}); });
+    sections.push({html:buildScheduleHTML(pg,effBase,f,td,schedAdj,aa),label:'Schedule'});
+    var renderArea = document.getElementById('renderArea');
+    var doc = new window.jspdf.jsPDF({orientation:'portrait',unit:'pt',format:'letter'});
+    var pageW = doc.internal.pageSize.getWidth();
+    var pageH = doc.internal.pageSize.getHeight();
+    var firstPage = true;
+    document.getElementById('pdfMsg').textContent = 'Rendering pages...';
+    for (var si = 0; si < sections.length; si++) {
+        var sec = sections[si];
+        document.getElementById('pdfSub').textContent = 'Section '+(si+1)+' of '+sections.length+': '+sec.label;
+        renderArea.innerHTML = sec.html;
+        await new Promise(function(r){ setTimeout(r,80); });
+        var canvas = await html2canvas(renderArea,{scale:2,useCORS:true,backgroundColor:'#ffffff',logging:false});
+        var imgW = pageW, imgH = (canvas.height/canvas.width)*imgW;
+        var yOff = 0;
+        while (yOff < imgH) {
+            if (!firstPage) doc.addPage();
+            firstPage = false;
+            var sliceH = Math.min(pageH, imgH-yOff);
+            var srcY = (yOff/imgH)*canvas.height, srcH = (sliceH/imgH)*canvas.height;
+            var sliceCanvas = document.createElement('canvas');
+            sliceCanvas.width = canvas.width; sliceCanvas.height = Math.ceil(srcH);
+            var ctx = sliceCanvas.getContext('2d');
+            ctx.drawImage(canvas,0,srcY,canvas.width,srcH,0,0,canvas.width,srcH);
+            var sliceData = sliceCanvas.toDataURL('image/jpeg',0.92);
+            doc.addImage(sliceData,'JPEG',0,0,imgW,sliceH);
+            yOff += pageH;
+        }
+    }
+    if (attachData.length > 0) {
+        document.getElementById('pdfMsg').textContent = 'Adding attachments...';
+        for (var ai = 0; ai < attachData.length; ai++) {
+            var fd = attachData[ai];
+            document.getElementById('pdfSub').textContent = 'Attachment '+(ai+1)+' of '+attachData.length+': '+fd.name;
+            if (fd.type==='image') { await addImageToPDF(doc,fd.data,pageW,pageH); }
+            else if (fd.type==='pdf'&&pdfjsLib) { await addPDFPagesToPDF(doc,fd.data,pageW,pageH); }
+        }
+    }
+    renderArea.innerHTML = '';
+    document.getElementById('pdfMsg').textContent = 'Saving PDF...';
+    doc.save(fileName);
+    overlay.classList.remove('active');
+}
+
+async function addImageToPDF(doc, src, pageW, pageH) {
+    return new Promise(function(resolve) {
+        var img = new Image();
+        img.onload = function() {
+            doc.addPage();
+            var ratio = Math.min(pageW/img.width, pageH/img.height);
+            var w = img.width*ratio, h = img.height*ratio;
+            doc.addImage(img,'JPEG',(pageW-w)/2,(pageH-h)/2,w,h);
+            resolve();
+        };
+        img.src = src;
+    });
+}
+
+async function addPDFPagesToPDF(doc, data, pageW, pageH) {
+    var pdf = await pdfjsLib.getDocument(data.slice(0)).promise;
+    for (var pi = 1; pi <= pdf.numPages; pi++) {
+        var page = await pdf.getPage(pi);
+        var vp = page.getViewport({scale:2});
+        var cv = document.createElement('canvas'); cv.width = vp.width; cv.height = vp.height;
+        await page.render({canvasContext:cv.getContext('2d'),viewport:vp}).promise;
+        var imgData = cv.toDataURL('image/jpeg',0.92);
+        doc.addPage();
+        var ratio = Math.min(pageW/vp.width, pageH/vp.height);
+        var w = vp.width*ratio, h = vp.height*ratio;
+        doc.addImage(imgData,'JPEG',(pageW-w)/2,(pageH-h)/2,w,h);
+    }
+}
+
+document.getElementById('genCustBtn').addEventListener('click', function(){ generatePacket('customer'); });
+document.getElementById('genOffBtn').addEventListener('click', function(){ generatePacket('office'); });
+
+document.getElementById('submittedDate').value = new Date().toISOString().split('T')[0];
+buildYearCheckboxes();
+</script>
+</body>
+</html>
